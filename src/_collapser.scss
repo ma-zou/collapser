@@ -1,0 +1,67 @@
+// Define some variables for collapser usage
+$collapser-class: ".collapser";
+$collapser-gaps-lr: 1.2rem;
+$collapser-gaps-tb: 1rem;
+
+// Dont Edit Inside the mixin, overwrite styles in @include collapser
+@mixin collapser {
+
+    #{$collapser-class} {
+        background: $secondary;
+        padding: $collapser-gaps-tb $collapser-gaps-lr;
+        position: relative;
+        cursor: pointer;
+
+        &:not(.collapser-initialized) {
+            background: none;
+            padding:0;
+
+            &:after, &:before {
+                display:none;
+            }
+        }
+
+        &:after, &:before {
+            background: $dark;
+            width:25px;
+            height: 3px;
+            content:"";
+            position: absolute;
+            right: $collapser-gaps-lr;
+            transition: all 300ms;
+        }
+        &:after {
+            top: 50%;
+        }
+        &:before {
+            transform: rotate(90deg);
+            top:50%;
+        }
+
+        &.active {
+            &:before {
+                transform: rotate(-135deg);
+            }
+            &:after {
+                transform: rotate(-45deg);
+            }
+        }
+
+        & + * {
+            overflow:hidden;
+            transition: max-height 300ms;
+
+            &.limited {
+                overflow-y:scroll;
+                margin-bottom: 1rem;
+            }
+        }
+
+        @content;
+    }
+}
+
+// Add your custom shine here ;)
+@include collapser {
+
+}
