@@ -21,10 +21,10 @@ Make sure to init the class after the DOM-Elements are loaded to prevent strange
 ## Options
 
 |Option|Type|Default|Description|
-----------------------
-|trigger|String (Selector)|'.collapser'|element that should the click event will be added to|
-|maxHeight|Bool/Int|false|max-height of element when active|
-|scrollTo|Bool|false|activate scrolling to element on click|
-|openFirst|Bool|true|open the first element on pageload|
+|-|-|-|-
+|trigger|String (Selector)|'.collapser'|element that should the click event will be added to| 
+|maxHeight|Bool/Int|false|max-height of element when active| 
+|scrollTo|Bool|false|activate scrolling to element on click| 
+|openFirst|Bool|true|open the first element on pageload| 
 |onhold|Bool|false|wait for init method before initalising|
 
