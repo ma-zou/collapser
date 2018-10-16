@@ -1,5 +1,5 @@
 # collapser
-Small JavaScrip accordion
+Small JavaScrip Accordion
 
 ## Usage:
 
@@ -16,7 +16,7 @@ window.addEventListener("resize", function () {
 });
 ```
 
-Make sure to init the class after the DOM-Elements are loaded to prevent strange scrolling
+Make sure to initialise the class after the DOM-Elements are loaded, to prevent strange scrolling
 
 ## Options
 
