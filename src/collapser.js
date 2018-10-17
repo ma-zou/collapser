@@ -1,14 +1,11 @@
-/**
- * params
- * trigger: CSS Selector for clickable Element (default: '.collapser')
- * maxHeight: Content should have MaxHeigth? Set an INT (default: false)
- * scrollTo: define weather site should scroll to anker if set (default: false)
- * 
- * methods
- * destroy: destroys the current Instance of collapser
- * init: initialize Instancen of collapser
- */
 
+
+/**
+ * @name Collapser
+ * @author Malte Zoudlik
+ * @version 1.0.1
+ * @copyright (c) 2018
+ */
 function Collapser(args) {
     this.params = {
         trigger: '.collapser',
@@ -37,16 +34,14 @@ function Collapser(args) {
         setTimeout(function () {
 
             var steps = (elem.getBoundingClientRect().top - window.pageXOffset - view) / (duration / 15),
-                currentTime = 0;
-            var animateScroll = function () {
-                currentTime += 15;
-                var val = steps;
+                currentTime = 0,
+                animateScroll = function () {
+                    currentTime += 15;
+                    var val = steps;
 
-                document.documentElement.scrollTop += val;
-                if (currentTime < duration) {
-                    setTimeout(animateScroll, 15);
-                }
-            };
+                    document.documentElement.scrollTop += val;
+                    if (currentTime < duration) setTimeout(animateScroll, 15);
+                };
             animateScroll();
         }, 300);
     }
@@ -86,7 +81,6 @@ function Collapser(args) {
         if (type) {
             window.addEventListener('resize', updateHeight);
             window.resizeObserver = elem;
-
         } else {
             window.removeEventListener('resize', updateHeight);
         }
@@ -107,9 +101,7 @@ function Collapser(args) {
         if (e.currentTarget.classList.contains('active')) {
             updateStatus(e.currentTarget, false);
         } else {
-            [].forEach.call(e.currentTarget.triggerList, function (trigger) {
-                updateStatus(trigger, false);
-            });
+            [].forEach.call(e.currentTarget.triggerList, function (trigger) { updateStatus(trigger, false); });
             updateStatus(e.currentTarget, true);
         }
     }
@@ -124,11 +116,9 @@ function Collapser(args) {
             trigger.nextElementSibling.style.maxHeight = 0;
         });
 
-        if (window.location.hash.indexOf('#') == -1 || window.location.hash.length <= 1) {
-            updateStatus(instance.triggerList[0], instance.params.openFirst, false);
-        } else {
-            openDesignated(window.location.hash, instance.triggerList);
-        }
+        if (window.location.hash.indexOf('#') == -1 || window.location.hash.length <= 1) updateStatus(instance.triggerList[0], instance.params.openFirst, false);
+        else openDesignated(window.location.hash, instance.triggerList);
+
         instance.status = true;
         return instance.triggerList;
     }
@@ -148,15 +138,11 @@ function Collapser(args) {
     }
 
     this.init = function () {
-        if (instance.status === false) {
-            init();
-        }
+        if (instance.status === false) init();
     }
 
     this.destroy = function () {
-        if (instance.status === true && instance.params.onhold) {
-            destroy();
-        }
+        if (instance.status && instance.params.onhold) destroy();
     }
 
     this.params = instance.params;
