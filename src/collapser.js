@@ -57,7 +57,7 @@ function Collapser(args) {
             }
             elem.nextElementSibling.style.maxHeight = activeHeight;
             observeHeight(elem.nextElementSibling, true);
-            if (typeof init == "undefined") scrollFunction(elem, 500, 100);
+            if (typeof init == "undefined" && instance.params.scrollTo === true) scrollFunction(elem, 500, 100);
         } else {
             elem.classList.remove('active');
             elem.nextElementSibling.classList.remove('limited');
