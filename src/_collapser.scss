@@ -2,15 +2,15 @@
 $collapser-class: ".collapser";
 $collapser-gaps-lr: 1.2rem;
 $collapser-gaps-tb: 1rem;
-$collapser-color: $secondary; 
-$collapser-dark: $dark; 
+$collapser-color: $secondary;
+$collapser-dark: $dark;
 
 // Dont Edit Inside the mixin, overwrite styles in @include collapser
 @mixin collapser {
 
     #{$collapser-class} {
         background: $collapser-color;
-        padding: $collapser-gaps-tb $collapser-gaps-lr;
+        padding: $collapser-gaps-tb 78px $collapser-gaps-tb $collapser-gaps-lr;
         position: relative;
         cursor: pointer;
 
