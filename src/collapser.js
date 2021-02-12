@@ -10,7 +10,6 @@ class Collapser {
             trigger: '.collapser',
             maxHeight: false,
             scrollTo: false,
-            scrollToOffset: 0,
             openFirst: true,
             onhold: false
         };
