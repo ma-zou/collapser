@@ -1,151 +1,132 @@
-
-
 /**
  * @name Collapser
  * @author Malte Zoudlik
  * @version 1.0.1
  * @copyright (c) 2018
  */
-function Collapser(args) {
-    this.params = {
-        trigger: '.collapser',
-        maxHeight: false,
-        scrollTo: false,
-        openFirst: true,
-        onhold: false
-    };
-    var instance = {};
+class Collapser {
+    constructor(args) {
+        this.params = {
+            trigger: '.collapser',
+            maxHeight: false,
+            scrollTo: false,
+            scrollToOffset: 0,
+            openFirst: true,
+            onhold: false
+        };
+        this.params =  {...this.params, ...args}
+        this.status = false;
+        this.triggerList = document.querySelectorAll(this.params.trigger);
 
-    var merge_options = function (obj1, obj2) {
-        var obj3 = {};
-        for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
-        for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
-        return obj3;
-    };
+        this.currentActiveElement = null;
 
-    instance.params = merge_options(this.params, args);
-    instance.status = false;
+        this.anker = (window.location.hash.indexOf('#') == -1 || window.location.hash.length <= 1) ? null : window.location.hash;
 
-    var scrollFunction = function (elem, duration, view) {
-        if (view === "top") view = 0;
-        else if (view === "bottom") view = window.innerHeight;
-        else if (view === "center") view = window.innerHeight / 2;
-
-        setTimeout(function () {
-
-            var steps = (elem.getBoundingClientRect().top - window.pageXOffset - view) / (duration / 15),
-                currentTime = 0,
-                animateScroll = function () {
-                    currentTime += 15;
-                    var val = steps;
-
-                    document.documentElement.scrollTop += val;
-                    if (currentTime < duration) setTimeout(animateScroll, 15);
-                };
-            animateScroll();
-        }, 300);
+        if (this.params.onhold === false) {
+            this.init();
+        }
     }
 
-    var updateStatus = function (elem, type, init) {
-        if (type) {
-            var activeHeight = elem.nextElementSibling.scrollHeight + 'px';
+    init() {
+        if (this.status === false) {
+            this.triggerList.forEach((trigger) => {
+                trigger.addEventListener('click', this.handleClick.bind(this));
+                trigger.classList.add('collapser-initialized');
+                trigger.nextElementSibling.style.maxHeight = 0;
+            });
+            if (this.anker == null) this.updateStatus(this.triggerList[0], this.params.openFirst, true);
+            else this.openById(window.location.hash, this.triggerList);
+    
+            this.status = true;
+        }
+    }
 
-            elem.classList.add('active');
-            if (instance.params.maxHeight != false && instance.params.maxHeight <= elem.nextElementSibling.scrollHeight) {
-                elem.nextElementSibling.classList.add('limited');
-                activeHeight = instance.params.maxHeight + 'px';
+    destroy() {
+        if (this.status && this.params.onhold) {
+            this.triggerList.forEach((trigger) => {
+                trigger.removeEventListener('click', this.handleClick);
+                trigger.classList.remove('collapser-initialized');
+                trigger.nextElementSibling.style.maxHeight = '100%';
+            });
+            this.status = false;
+        }
+    }
+
+    handleClick(event) {
+        const clickedElement = event.currentTarget;
+
+        if (clickedElement.classList.contains('active')) {
+            this.updateStatus(clickedElement, false);
+        } else {
+            this.triggerList.forEach((trigger) => { this.updateStatus(trigger, false); });
+            this.updateStatus(clickedElement, true);
+        }
+
+    }
+
+    updateStatus(element, type, initialCall = false) {
+        let activeHeight, 
+            nextElement = element.nextElementSibling;;
+        if (type && element) {
+            activeHeight = nextElement.scrollHeight + 'px';
+
+            element.classList.add('active');
+            if (this.params.maxHeight != false && this.params.maxHeight <= nextElement.scrollHeight) {
+                nextElement.classList.add('limited');
+                activeHeight = this.params.maxHeight + 'px';
             }
-            elem.nextElementSibling.style.maxHeight = activeHeight;
-            observeHeight(elem.nextElementSibling, true);
-            if (typeof init == "undefined" && instance.params.scrollTo === true) scrollFunction(elem, 500, 100);
+            nextElement.style.maxHeight = activeHeight;
+            this.currentActiveElement = nextElement;
+            window.addEventListener('resize', this.updateHeight.bind(this));
+            if (initialCall !== true && this.params.scrollTo === true) this.scrollFunction(element);
         } else {
-            elem.classList.remove('active');
-            elem.nextElementSibling.classList.remove('limited');
-            observeHeight(elem.nextElementSibling, false);
-            elem.nextElementSibling.style.maxHeight = 0;
+            element.classList.remove('active');
+            nextElement.classList.remove('limited');
+            window.removeEventListener('resize', this.updateHeight);
+            nextElement.style.maxHeight = 0;
         }
     }
 
-    var updateHeight = function (e) {
-        var activeHeight = e.target.resizeObserver.scrollHeight + 'px';
-        if (instance.params.maxHeight != false && instance.params.maxHeight <= e.target.resizeObserver.scrollHeight) {
-            e.target.resizeObserver.classList.add('limited');
-            activeHeight = instance.params.maxHeight + 'px';
+    updateHeight() {
+        const activeHeight = this.currentActiveElement.scrollHeight + 'px';
+        if (this.params.maxHeight != false && this.params.maxHeight <= e.target.resizeObserver.scrollHeight) {
+            this.currentActiveElement.classList.add('limited');
+            activeHeight = this.params.maxHeight + 'px';
         } else {
-            e.target.resizeObserver.classList.remove('limited');
+            this.currentActiveElement.classList.remove('limited');
         }
-        e.target.resizeObserver.style.maxHeight = activeHeight;
+        this.currentActiveElement.style.maxHeight = activeHeight;
     }
 
-    var observeHeight = function (elem, type) {
-        if (type) {
-            window.addEventListener('resize', updateHeight);
-            window.resizeObserver = elem;
-        } else {
-            window.removeEventListener('resize', updateHeight);
-        }
+    scrollFunction(element) {
+        window.setTimeout(() => {
+            element.scrollIntoView({left: 0, block: 'start', behavior: 'smooth'})
+        }, 300)
     }
 
-    var openDesignated = function (linked, triggerList) {
-
-        [].forEach.call(triggerList, function (trigger) {
-            updateStatus(trigger, false);
-            if (trigger.id == linked.replace('#', '')) {
-                updateStatus(trigger, true);
-                scrollFunction(trigger, 500, 100);
+    openById(link) {
+        this.triggerList.forEach((trigger) => {
+            this.updateStatus(trigger, false);
+            if (trigger.id == link.replace('#', '')) {
+                this.updateStatus(trigger, true);
+                if(this.params.scrollTo) this.scrollFunction(trigger);
             }
         });
     }
 
-    var handleClick = function (e) {
-        if (e.currentTarget.classList.contains('active')) {
-            updateStatus(e.currentTarget, false);
-        } else {
-            [].forEach.call(e.currentTarget.triggerList, function (trigger) { updateStatus(trigger, false); });
-            updateStatus(e.currentTarget, true);
-        }
-    }
-
-    var init = function () {
-        instance.triggerList = document.querySelectorAll(instance.params.trigger);
-
-        [].forEach.call(instance.triggerList, function (trigger) {
-            trigger.addEventListener('click', handleClick);
-            trigger.classList.add('collapser-initialized');
-            trigger.triggerList = instance.triggerList;
-            trigger.nextElementSibling.style.maxHeight = 0;
+    openByNumber(number) {
+        this.triggerList.forEach((trigger, key) => {
+            this.updateStatus(trigger, false);
+            if(number == key) {
+                this.updateStatus(trigger, true);
+                if(this.params.scrollTo) this.scrollFunction(trigger);
+            }
         });
-
-        if (window.location.hash.indexOf('#') == -1 || window.location.hash.length <= 1) updateStatus(instance.triggerList[0], instance.params.openFirst, false);
-        else openDesignated(window.location.hash, instance.triggerList);
-
-        instance.status = true;
-        return instance.triggerList;
     }
 
-    var destroy = function () {
-        instance.triggerList = document.querySelectorAll(instance.params.trigger);
-        [].forEach.call(instance.triggerList, function (trigger) {
-            trigger.removeEventListener('click', handleClick);
-            trigger.classList.remove('collapser-initialized');
-            trigger.nextElementSibling.style.maxHeight = '100%';
+    closeAll() {
+        this.triggerList.forEach((trigger, key) => {
+            this.updateStatus(trigger, false);
         });
-        instance.status = false;
     }
-
-    if (instance.params.onhold === false) {
-        init();
-    }
-
-    this.init = function () {
-        if (instance.status === false) init();
-    }
-
-    this.destroy = function () {
-        if (instance.status && instance.params.onhold) destroy();
-    }
-
-    this.params = instance.params;
-
-    return this
 }
