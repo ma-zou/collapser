@@ -16,7 +16,7 @@ window.addEventListener("resize", function () {
 });
 ```
 
-Make sure to initialise the class after the DOM-Elements are loaded, to prevent strange scrolling
+Make sure to initialize the class after the DOM-Elements are loaded, to prevent strange scrolling
 
 ## Options
 
@@ -26,5 +26,15 @@ Make sure to initialise the class after the DOM-Elements are loaded, to prevent 
 |maxHeight|Bool/Int|false|max-height of element when active| 
 |scrollTo|Bool|false|activate scrolling to element on click| 
 |openFirst|Bool|true|open the first element on pageload| 
-|onhold|Bool|false|wait for init method before initalising|
+|onhold|Bool|false|wait for init method before initializing|
+
+## Methods
+
+|Method|Params|Description|
+|-|-|-
+|init||Initializes the script, in case option onhold was set to true or the collapse was destroyed|
+|destroy||Destroys the script, removes all listener and classes added|
+|closeAll||Closes all open items.|
+|openByNumber|Int|Opens the nth selector in the List based on the number provided, starting at 0.|
+|openById|string|Opens an item with the same Id as provided. \# get replaces automatically.|
 
