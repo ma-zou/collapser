@@ -1,7 +1,7 @@
 /**
  * @name Collapser
  * @author Malte Zoudlik
- * @version 1.0.1
+ * @version 1.0.2
  * @copyright (c) 2018
  */
 class Collapser {
@@ -11,7 +11,8 @@ class Collapser {
             maxHeight: false,
             scrollTo: false,
             openFirst: true,
-            onhold: false
+            onhold: false,
+            closeOnOpen: true
         };
         this.params =  {...this.params, ...args}
         this.status = false;
@@ -57,7 +58,9 @@ class Collapser {
         if (clickedElement.classList.contains('active')) {
             this.updateStatus(clickedElement, false);
         } else {
-            this.triggerList.forEach((trigger) => { this.updateStatus(trigger, false); });
+            if(this.params.closeOnOpen) {
+                this.triggerList.forEach((trigger) => { this.updateStatus(trigger, false); });
+            }
             this.updateStatus(clickedElement, true);
         }
 
