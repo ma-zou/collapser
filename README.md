@@ -27,6 +27,7 @@ Make sure to initialize the class after the DOM-Elements are loaded, to prevent 
 |scrollTo|Bool|false|activate scrolling to element on click| 
 |openFirst|Bool|true|open the first element on pageload| 
 |onhold|Bool|false|wait for init method before initializing|
+|closeOnOpen|Bool|true|closes other collapser when opening one|
 
 ## Methods
 
